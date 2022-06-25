@@ -22,6 +22,8 @@ class TimeSamplePage extends StatefulWidget {
 class _TimeSamplePageState extends State<TimeSamplePage> {
   late Timer _timer; //状態
   late DateTime _time; //ここで時間の形になっている
+  bool isVisible = true;
+  bool isVis = false;
 
   @override
   void initState() { //初期化処理
@@ -36,27 +38,56 @@ class _TimeSamplePageState extends State<TimeSamplePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: Icon(Icons.timer),
+        title: Text('5秒で止めちゃって〜〜!!'),
+      ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            //その時点での時間（_time）を00:00:00形式で表示している
-            DateFormat.Hms().format(_time),
-            style: Theme.of(context).textTheme.headline2,
+          Image(image: NetworkImage('https://spice.eplus.jp/images/GH5GLO3GwHB29kAZA5W4AsLfUKEMRZeL6zGdoiVrOsldNAysgqNPSaAtw52X2t9r',),),
+          Visibility(
+            visible: isVisible, //表示状態
+            // maintainSize: true,
+            child: Text(
+              //その時点での時間（_time）を00:00:00形式で表示している
+              DateFormat.Hms().format(_time),
+              style: Theme.of(context).textTheme.headline2,
+            ),
+          ),
+          Visibility(
+            visible: isVis,
+            child: (_time == DateTime.utc(0,0,05))?Text(
+              'どんだけ〜!!',
+              style: Theme.of(context).textTheme.headline2,
+              )
+              :Text(
+                'いかほど〜！',
+                style: TextStyle(
+                  fontSize: 32,
+                ),
+              ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               FloatingActionButton(
                 onPressed: (){  //ストップボタンタップ時
-                  if(_timer != null && _timer.isActive)
-                  _timer.cancel();
+                //isVisible = !isVisible;  //表示
+                if(_timer != null && _timer.isActive)
+                _timer.cancel();
+                setState(() {
+                  isVisible = !isVisible;  //表示
+                  isVis = !isVis;
+                });
+                
                 },
                 child: Text('Stop'),
               ),
               SizedBox(width: 16,),
               FloatingActionButton(
                 onPressed: (){
+                  isVisible = !isVisible; //非表示
                   //一秒ごとに定期的に処理を実行
                   _timer = Timer.periodic(
                     Duration(seconds: 1),
